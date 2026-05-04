@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Create Bill</title>
+<style>
+body { font-family: Arial; text-align:center; background:#f5f5f5; }
+.container { width:320px; margin:auto; background:white; padding:15px; border-radius:10px; }
+input, button { width:90%; padding:10px; margin:5px; }
+table { width:100%; margin-top:10px; border-collapse:collapse; }
+th,td { border:1px solid black; padding:5px; }
+a { display:block; margin-top:10px; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Create Bill</h2>
+
+<input id="name" placeholder="Name">
+<input id="contact" placeholder="Contact">
+<input id="weight" type="number" placeholder="Total Weight">
+<input id="price" type="number" placeholder="Price per KG">
+
+<button onclick="addBill()">Create Bill</button>
+
+<h3>Total Bills Amount: <span id="grandTotal">0</span></h3>
+
+<a href="history.html">📄 View Saved Bills</a>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Contact</th>
+<th>Weight</th>
+<th>Price</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+</div>
+
+<script>
+let bills = JSON.parse(localStorage.getItem("bills")) || [];
+
+function addBill() {
+    let name = document.getElementById("name").value;
+    let contact = document.getElementById("contact").value;
+    let weight = parseFloat(document.getElementById("weight").value);
+    let price = parseFloat(document.getElementById("price").value);
+
+    if (!name || !contact || isNaN(weight) || isNaN(price)) {
+        alert("All fields required correctly!");
+        return;
+    }
+
+    let total = weight * price;
+
+    let bill = { name, contact, weight, price, total };
+
+    bills.push(bill);
+    localStorage.setItem("bills", JSON.stringify(bills));
+
+    clearInputs();
+    display();
+}
+
+function clearInputs() {
+    document.getElementById("name").value = "";
+    document.getElementById("contact").value = "";
+    document.getElementById("weight").value = "";
+    document.getElementById("price").value = "";
+}
+
+function display() {
+    let table = document.getElementById("table");
+    table.innerHTML = "";
+
+    let grandTotal = 0;
+
+    bills.forEach(b => {
+        grandTotal += b.total;
+
+        table.innerHTML += `
+        <tr>
+            <td>${b.name}</td>
+            <td>${b.contact}</td>
+            <td>${b.weight}</td>
+            <td>${b.price}</td>
+            <td>${b.total}</td>
+        </tr>`;
+    });
+
+    document.getElementById("grandTotal").innerText = grandTotal;
+}
+
+display();
+</script>
+
+</body>
+</html>
